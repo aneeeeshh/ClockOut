@@ -1,0 +1,102 @@
+1. Theme & UI Updates
+
+Change the entire app theme dynamically based on status.
+
+Implement Dark Mode where:
+
+All dark backgrounds are true pitch black (#000000), not dark gray.
+
+Text and UI elements maintain proper contrast and accessibility.
+
+Ensure consistent styling across all components when the status changes.
+
+2. Responsive Layout (No Scrolling)
+
+Make the application fully responsive across screen sizes.
+
+The entire UI must:
+
+Fit within the visible screen height and width
+
+Not require vertical or horizontal scrolling
+
+All content should be visible on a single page.
+
+Use flexible layouts (Flexbox/Grid) and relative sizing where appropriate.
+
+3. Time Calculation Features
+A. Arrival Time Calculator
+
+Add an option where the user can:
+
+Input their planned out time (e.g., 6:00 PM)
+
+The app calculates and displays what time they must arrive at the office
+
+Calculation should be based on total working time minus deductions (described below).
+
+B. Half-Day Option
+
+Add a checkbox for “Half Day”.
+
+When enabled:
+
+Working time should be adjusted accordingly.
+
+All calculations (arrival time and out time) should reflect the half-day logic.
+
+C. Short Leave Calculator
+
+Add a scroll wheel / selector for short leave count:
+
+Range: 1 to 3
+
+Each short leave:
+
+Reduces working time by 50 minutes by default
+
+Make the duration per short leave configurable, so users can change it.
+
+Total short leave deduction should update dynamically based on:
+
+Number of short leaves
+
+Duration per short leave
+
+4. Final Time Calculation Logic
+
+Based on:
+
+Planned out time
+
+Half-day selection
+
+Number of short leaves
+
+Duration of each short leave
+
+The app should:
+
+Accurately calculate arrival time
+
+Accurately calculate final out time
+
+Update results in real-time as inputs change.
+
+5. Constraints & Expectations
+
+Do not refactor unrelated code.
+
+Do not remove existing features.
+
+Only modify or add code where necessary.
+
+Keep the UI clean, intuitive, and minimal.
+
+Return:
+
+Updated components/files only
+
+Clear logic for time calculations
+
+Responsive styling implementation
