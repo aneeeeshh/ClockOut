@@ -10,7 +10,7 @@ import Home from "@/pages/home";
 function Router() {
   return (
     <Switch>
-      <Route path="/home" component={Home} />
+      <Route path="/ClockOut/" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );
