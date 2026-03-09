@@ -46,7 +46,6 @@ const MOTIVATIONAL_QUOTES = [
   "Everything you've ever wanted is on the other side of fear.",
   "Hard work beats talent when talent doesn't work hard.",
   "Focus on being productive instead of busy.",
-  "Believe you can and you're halfway there.",
   "Don't stop until you're proud."
 ];
 
