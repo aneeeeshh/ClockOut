@@ -88,7 +88,7 @@ export default function Home() {
 
   const fetchQuote = async () => {
     try {
-      const response = await fetch('https://api.quotable.io/random');
+      const response = await fetch("https://zenquotes.io/api/today");
       if (response.ok) {
         const data = await response.json();
         setQuote({ content: data.content, author: data.author });
