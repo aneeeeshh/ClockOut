@@ -35,20 +35,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 const IST_TIMEZONE = 'Asia/Kolkata';
 
-const MOTIVATIONAL_QUOTES = [
-  "The only way to do great work is to love what you do.",
-  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-  "Your time is limited, so don't waste it living someone else's life.",
-  "Don't count the days, make the days count.",
-  "The future depends on what you do today.",
-  "The only place where success comes before work is in the dictionary.",
-  "Start where you are. Use what you have. Do what you can.",
-  "Everything you've ever wanted is on the other side of fear.",
-  "Hard work beats talent when talent doesn't work hard.",
-  "Focus on being productive instead of busy.",
-  "Don't stop until you're proud."
-];
-
 export default function Home() {
   const { toast } = useToast();
   
@@ -88,10 +74,16 @@ export default function Home() {
 
   const fetchQuote = async () => {
     try {
-      const response = await fetch("https://zenquotes.io/api/today");
+      const response = await fetch(
+				"https://api.api-ninjas.com/v2/quotes?categories=success%2Cwisdom",
+				{
+					headers: { "X-Api-Key": "ZOGjV1dLvOMumAfmR5AHDcwb7Kad2awiFaIRzkE4" },
+				},
+			);
       if (response.ok) {
-        const data = await response.json();
-        setQuote({ content: data.content, author: data.author });
+        const req = await response.json();
+        const data = req[0];
+        setQuote({ content: data.quote, author: data.author });
       }
     } catch (e) {
       console.error("Quote fetch failed", e);
