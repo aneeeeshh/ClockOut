@@ -4,7 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --font-display: 'Outfit', sans-serif;
   --font-sans: 'DM Sans', sans-serif;
