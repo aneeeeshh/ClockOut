@@ -75,7 +75,7 @@ export default function Home() {
   const fetchQuote = async () => {
     try {
       const response = await fetch(
-				"https://api.api-ninjas.com/v2/quotes?categories=success%2Cwisdom",
+				"https://api.api-ninjas.com/v2/randomquotes?categories=success,wisdom,productivity",
 				{
 					headers: { "X-Api-Key": "ZOGjV1dLvOMumAfmR5AHDcwb7Kad2awiFaIRzkE4" },
 				},
