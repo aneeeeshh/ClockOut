@@ -22,9 +22,11 @@ import { toZonedTime, format as formatTz } from "date-fns-tz";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, LogOut, Coffee, Timer, AlertCircle, RotateCcw, Hourglass, Quote, Calendar as CalendarIcon, Calculator, Settings, Info, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { TimeInput } from "@/components/time-input";
+import { DurationInput } from "@/components/duration-input";
+import { ValueStepper } from "@/components/value-stepper";
+import { AnimatedBackground } from "@/components/animated-background";
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -241,9 +243,9 @@ export default function Home() {
         : [...prev, dateStr]
     );
   };
-  const hoursList = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-  const minutesList = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
-  const shortLeaveCounts = ["0", "1", "2", "3"];
+  const shortLeaveDeduction =
+    (parseInt(currentSettings.shortLeaveCount) || 0) *
+    (parseInt(currentSettings.shortLeaveDuration) || 50);
 
   return (
 		<div
@@ -256,29 +258,7 @@ export default function Home() {
 						: "selection:bg-primary/30 [--status-color:var(--primary)]",
 			)}
 		>
-			{/* Dynamic Theme Background */}
-			<div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-				<div
-					className={cn(
-						"absolute top-0 left-1/4 w-96 h-96 rounded-full blur-[100px] transition-all duration-1000",
-						isNotStarted
-							? "bg-primary/10"
-							: isOvertime
-								? "bg-green-500/10"
-								: "bg-primary/10",
-					)}
-				/>
-				<div
-					className={cn(
-						"absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[100px] transition-all duration-1000",
-						isNotStarted
-							? "bg-blue-500/10"
-							: isOvertime
-								? "bg-emerald-500/10"
-								: "bg-accent/10",
-					)}
-				/>
-			</div>
+			<AnimatedBackground />
 
 			<style
 				dangerouslySetInnerHTML={{
@@ -415,43 +395,12 @@ export default function Home() {
 									)}
 								</AnimatePresence>
 
-								<div className="space-y-2">
-									<Label className="text-xs font-bold uppercase tracking-tighter">
-										Required Hours & Mins
-									</Label>
-									<div className="grid grid-cols-2 gap-2">
-										<Select
-											value={requiredHours}
-											onValueChange={setRequiredHours}
-										>
-											<SelectTrigger className="h-10 bg-background/50 border-primary/20">
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent className="max-h-40">
-												{hoursList.map((h) => (
-													<SelectItem key={h} value={h}>
-														{h}h
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<Select
-											value={requiredMinutes}
-											onValueChange={setRequiredMinutes}
-										>
-											<SelectTrigger className="h-10 bg-background/50 border-primary/20">
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent className="max-h-40">
-												{minutesList.map((m) => (
-													<SelectItem key={m} value={m}>
-														{m}m
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-								</div>
+								<DurationInput
+									hours={requiredHours}
+									minutes={requiredMinutes}
+									onHoursChange={setRequiredHours}
+									onMinutesChange={setRequiredMinutes}
+								/>
 
 								<div className="flex items-center justify-between p-3 bg-background/40 rounded-xl border border-border/50">
 									<div className="space-y-0.5">
@@ -468,49 +417,39 @@ export default function Home() {
 									/>
 								</div>
 
-								<div className="grid grid-cols-2 gap-3">
-									<div className="space-y-2">
-										<Label className="text-xs font-bold uppercase tracking-tighter">
-											Short Leaves
-										</Label>
-										<Select
-											value={currentSettings.shortLeaveCount}
-											onValueChange={(v) => setSettings({ shortLeaveCount: v })}
-										>
-											<SelectTrigger className="h-10 bg-background/50 border-primary/20">
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												{shortLeaveCounts.map((c) => (
-													<SelectItem key={c} value={c}>
-														{c}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-									<div className="space-y-2">
-										<Label className="text-xs font-bold uppercase tracking-tighter">
-											Mins/Leave
-										</Label>
-										<Select
-											value={currentSettings.shortLeaveDuration}
-											onValueChange={(v) =>
-												setSettings({ shortLeaveDuration: v })
+								<div className="space-y-2">
+									<Label className="text-xs font-bold uppercase tracking-tighter">
+										Short Leave
+									</Label>
+									<div className="grid grid-cols-2 gap-3">
+										<ValueStepper
+											label="Leaves"
+											value={parseInt(currentSettings.shortLeaveCount) || 0}
+											onChange={(v) =>
+												setSettings({ shortLeaveCount: String(v) })
 											}
-										>
-											<SelectTrigger className="h-10 bg-background/50 border-primary/20">
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												{["30", "40", "50", "60"].map((m) => (
-													<SelectItem key={m} value={m}>
-														{m}m
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+											min={0}
+											max={3}
+										/>
+										<ValueStepper
+											label="Mins each"
+											value={
+												parseInt(currentSettings.shortLeaveDuration) || 50
+											}
+											onChange={(v) =>
+												setSettings({ shortLeaveDuration: String(v) })
+											}
+											min={30}
+											max={60}
+											step={10}
+											suffix="m"
+										/>
 									</div>
+									<p className="text-[10px] text-muted-foreground text-center">
+										{shortLeaveDeduction > 0
+											? `Deducts ${shortLeaveDeduction} min from required time`
+											: "No short leave deducted"}
+									</p>
 								</div>
 							</div>
 
