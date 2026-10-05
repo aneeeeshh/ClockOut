@@ -272,3 +272,31 @@
     animation: none !important;
   }
 }
+/* The clock grows from the time tile's top edge and contracts back into it. */
+.clockout-time-popover[data-state="open"] {
+  transform-origin: 24px 120px !important;
+  animation: clockout-time-open 230ms cubic-bezier(0.2, 0.8, 0.2, 1) both !important;
+}
+
+.clockout-time-popover[data-state="closed"] {
+  transform-origin: 24px 120px !important;
+  animation: clockout-time-close 170ms ease-in both !important;
+}
+
+@keyframes clockout-time-open {
+  from { opacity: 0; transform: scale(0.72); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes clockout-time-close {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.72); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clockout-time-popover[data-state] { animation: none !important; }
+}
+
+.clockout-time-popover.clockout-duration-popover[data-state] {
+  transform-origin: 24px 250px !important;
+}

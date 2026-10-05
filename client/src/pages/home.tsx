@@ -24,6 +24,7 @@ import { Clock, LogOut, Coffee, Timer, AlertCircle, RotateCcw, Hourglass, Quote,
 import { TimeInput } from "@/components/time-input";
 import { DurationInput } from "@/components/duration-input";
 import { ValueStepper } from "@/components/value-stepper";
+import { ShortLeaveDuration } from "@/components/short-leave-duration";
 import { AnimatedBackground } from "@/components/animated-background";
 import { StatCard } from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,14 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const IST_TIMEZONE = 'Asia/Kolkata';
+
+const shortLeaveMinutes = (value: string) => Math.max(0, parseInt(value, 10) || 0);
+
+const formatShortLeave = (totalMinutes: number) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours ? `${hours}h ${minutes}m` : `${minutes} min`;
+};
 
 export default function Home() {
   const { toast } = useToast();
@@ -160,8 +169,8 @@ export default function Home() {
       }
       
       // Short Leave deductions
-      const shortLeaveDeduction = (parseInt(shortLeaveCount) || 0) * (parseInt(shortLeaveDuration) || 50);
-      const totalRequiredMinutes = (baseHours * 60) + baseMinutes - shortLeaveDeduction;
+      const shortLeaveDeduction = (parseInt(shortLeaveCount, 10) || 0) * shortLeaveMinutes(shortLeaveDuration);
+      const totalRequiredMinutes = Math.max(0, (baseHours * 60) + baseMinutes - shortLeaveDeduction);
       
       // Calculate Arrival Time based on Planned Out Time
       const arrivalDateTime = subMinutes(plannedOutDateTime, totalRequiredMinutes);
@@ -199,7 +208,9 @@ export default function Home() {
       } else {
         setIsNotStarted(false);
         const workedMinutes = nowMinutes - referenceLoginMinutes;
-        setProgress(Math.min(100, Math.max(0, (workedMinutes / totalMinutesToConsider) * 100)));
+        setProgress(totalMinutesToConsider > 0
+          ? Math.min(100, Math.max(0, (workedMinutes / totalMinutesToConsider) * 100))
+          : 100);
 
         if (diffMinutes > 0) {
           setIsOvertime(false);
@@ -245,7 +256,7 @@ export default function Home() {
   };
   const shortLeaveDeduction =
     (parseInt(currentSettings.shortLeaveCount) || 0) *
-    (parseInt(currentSettings.shortLeaveDuration) || 50);
+    shortLeaveMinutes(currentSettings.shortLeaveDuration);
 
   return (
 		<div
@@ -429,25 +440,15 @@ export default function Home() {
 												setSettings({ shortLeaveCount: String(v) })
 											}
 											min={0}
-											max={3}
 										/>
-										<ValueStepper
-											label="Mins each"
-											value={
-												parseInt(currentSettings.shortLeaveDuration) || 50
-											}
-											onChange={(v) =>
-												setSettings({ shortLeaveDuration: String(v) })
-											}
-											min={30}
-											max={60}
-											step={10}
-											suffix="m"
+										<ShortLeaveDuration
+											value={shortLeaveMinutes(currentSettings.shortLeaveDuration)}
+											onChange={(v) => setSettings({ shortLeaveDuration: String(v) })}
 										/>
 									</div>
 									<p className="text-[10px] text-muted-foreground text-center">
 										{shortLeaveDeduction > 0
-											? `Deducts ${shortLeaveDeduction} min from required time`
+											? `Deducts ${formatShortLeave(shortLeaveDeduction)} from required time`
 											: "No short leave deducted"}
 									</p>
 								</div>

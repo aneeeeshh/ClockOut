@@ -7,7 +7,7 @@ interface ValueStepperProps {
   value: number;
   onChange: (value: number) => void;
   min: number;
-  max: number;
+  max?: number;
   step?: number;
   suffix?: string;
   className?: string;
@@ -23,17 +23,17 @@ export function ValueStepper({
   suffix,
   className,
 }: ValueStepperProps) {
-  const range = Math.max(max - min, 1);
-  const progress = Math.min(1, Math.max(0, (value - min) / range));
+  const range = max === undefined ? 1 : Math.max(max - min, 1);
+  const progress = max === undefined ? 0 : Math.min(1, Math.max(0, (value - min) / range));
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference * (1 - progress);
   const atMin = value <= min;
-  const atMax = value >= max;
+  const atMax = max !== undefined && value >= max;
 
   const adjust = (direction: 1 | -1) => {
     const next = value + direction * step;
-    onChange(Math.min(max, Math.max(min, next)));
+    onChange(Math.min(max ?? Number.MAX_SAFE_INTEGER, Math.max(min, next)));
   };
 
   return (
@@ -67,7 +67,7 @@ export function ValueStepper({
               className="fill-none stroke-muted-foreground/15"
               strokeWidth="3.5"
             />
-            <circle
+            {max !== undefined && <circle
               cx="28"
               cy="28"
               r={radius}
@@ -77,7 +77,7 @@ export function ValueStepper({
               strokeDasharray={circumference}
               strokeDashoffset={dashOffset}
               style={{ transition: "stroke-dashoffset 0.35s ease, stroke 0.7s ease" }}
-            />
+            />}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
             <motion.span
